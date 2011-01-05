@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project name="antlr-url-grammar" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property name="ivy.version" value="2.2.0" />
+  <property name="ivy.url" value="http://repo2.maven.org/maven2/org/apache/ivy/ivy" />
+
+  <property name="lib.dir" value="${basedir}/lib"/>
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="src.java" value="${src.dir}/java"/>
+  <property name="src.test" value="${src.dir}/test"/>
+
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="build.lib" value="${build.dir}/lib" />
+  <property name="build.test" value="${build.dir}/test" />
+  <property name="build.classes" value="${build.dir}/classes" />
+  <property name="build.test" value="${build.dir}/test"/>
+  <property name="test.classes" value="${build.test}/classes"/>
+  <property name="test.output" value="${build.test}/output"/>
+
+  <path id="autoivy.classpath">
+    <fileset dir="${build.lib}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement location="${build.dir}/ivy-${ivy.version}.jar" />
+  </path>
+  
+  <path id="classpath">
+      <pathelement location="${build.classes}"/>
+	    <fileset dir="${lib.dir}">
+	      <include name="**/*.jar" />
+	    </fileset>
+      <path refid="autoivy.classpath" />
+  </path>
+
+  <target name="ivy-download" depends="init" unless="ivy.jar.exists">
+    <echo>Downloading Ivy...</echo>
+    <get src="${ivy.url}/${ivy.version}/ivy-${ivy.version}.jar" 
+      dest="${build.dir}/ivy-${ivy.version}.jar" 
+      usetimestamp="true" />
+  </target>
+
+  <target name="ivy-init" depends="ivy-download" unless="ivy.initialized">
+    <mkdir dir="${build.lib}" />
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" 
+      uri="antlib:org.apache.ivy.ant" 
+      classpathref="autoivy.classpath" />
+    <property name="ivy.initialized" value="true" />
+  </target>
+
+  <target name="ivy-retrieve-build" depends="ivy-init">
+    <ivy:retrieve type="jar,source" 
+      sync="true" 
+      pattern="${build.lib}/[type]s/[artifact]-[revision].[ext]" />
+  </target>
+
+  <target name="init">
+    <mkdir dir="${build.dir}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.classes}"/>
+    <delete dir="${build.test}"/>
+  </target>
+  
+  <target name="gen-url-parsor" depends="ivy-retrieve-build">
+    <property name="url.dir" value="${src.java}/org/jingguo/url"/>
+    <java jar="${lib.dir}/antlr-3.3-complete.jar" fork="true">
+      <arg value="-o ${url.dir} ${url.dir}/URL.g"/>
+    </java>
+  </target>
+  
+  <target name="compile" depends="init, ivy-retrieve-build">
+    <mkdir dir="${build.classes}"/>
+    <echo message="${ant.project.name}: ${ant.file}"/>
+    <javac debug="true" debuglevel="${debuglevel}" destdir="${build.classes}" includeantruntime="false">
+        <src path="${src.java}"/>
+        <classpath refid="classpath"/>
+    </javac>
+  </target>
+  
+  <target name="compile-test" depends="compile">
+    <mkdir dir="${test.classes}"/>
+    <javac debug="true" debuglevel="${debuglevel}" destdir="${test.classes}" includeantruntime="false">
+        <src path="${src.test}"/>
+        <classpath refid="classpath"/>
+    </javac>
+  </target>
+  
+  <target name="test" depends="compile-test">
+    <mkdir dir="${test.output}"/>
+    <junit fork="on">
+      <formatter type="xml" usefile="true"/>
+      <formatter type="brief" usefile="false"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${test.classes}"/>
+      </classpath>
+      <batchtest todir="${test.output}">
+        <fileset dir="${src.test}" includes="**/*.java"/> 
+      </batchtest>
+    </junit>
+  </target>
+</project>
