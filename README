@@ -1,3 +1,7 @@
 ANTLR URL Grammar
 =================
 I wrote this grammar when I was learning ANTLR.
+
+Setup
+-----
+ANT 1.7 or above is needed. Run "ant gen-url-parser" and "ant test".

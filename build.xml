@@ -77,11 +77,11 @@
     <delete dir="${build.classes}"/>
     <delete dir="${build.test}"/>
   </target>
-  
-  <target name="gen-url-parsor" depends="ivy-retrieve-build">
+
+  <target name="gen-url-parser" depends="ivy-retrieve-build">
     <property name="url.dir" value="${src.java}/org/jingguo/url"/>
     <java jar="${lib.dir}/antlr-3.3-complete.jar" fork="true">
-      <arg value="-o ${url.dir} ${url.dir}/URL.g"/>
+      <arg value="${url.dir}/URL.g"/>
     </java>
   </target>
   
