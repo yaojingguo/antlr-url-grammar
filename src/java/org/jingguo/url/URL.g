@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 /*
- * This ANTLR grammar for HTTP url is based on RFC 2396. But it does not 
- * strictly adhere to this RFC. It only handles common format for HTTP URL. But 
- * it should be easily extended to handle all the url formats specified by the 
+ * This ANTLR grammar for HTTP URL is based on RFC 2396. But it does not 
+ * strictly adhere to the RFC. It only handles common formats for HTTP URL. But 
+ * it could be easily extended to handle all the URL formats specified by the 
  * RFC.
  */
  
