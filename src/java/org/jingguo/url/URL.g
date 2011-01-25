@@ -80,7 +80,7 @@ host: hostname | ipV4Address;
 
 hostname: (domainlabel '.')* toplabel;
 domainlabel: alphanum ((alphanum | '-')* alphanum)?;
-toplabel: alpha ((alphanum | '-')? alphanum)?;
+toplabel: ALPHA ((alphanum | '-')? alphanum)?;
 
 ipV4Address: (DIGIT)+ '.' (DIGIT)+ '.' (DIGIT)+ '.' (DIGIT)+;
 
@@ -107,13 +107,14 @@ hex: DIGIT
   | HEX_LETTER
   ;
 alphanum: DIGIT
-        | alpha
+        | ALPHA
         ;
-alpha: HEX_LETTER | OTHER_LETTER;
 reserved: Q_RESERVED | '=' | '&'; 
 
 Q_RESERVED: ';' | '/' | '?' | ':' | '@' | '+' | '$' | ',';
 MARK: '-' | '_' | '.' | '!' | '~' | '*' | '\'' | '(' | ')';
 DIGIT: '0'..'9';
+ALPHA: 'a'..'z' | 'A'..'Z' ;
+
+fragment
 HEX_LETTER: 'a'..'f' | 'A'..'F';
-OTHER_LETTER: 'g'..'z' | 'G'..'Z';
